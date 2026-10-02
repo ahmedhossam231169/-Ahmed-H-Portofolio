@@ -1,0 +1,691 @@
+@import 'tailwindcss';
+
+/* ───────────────────────── Tokens ───────────────────────── */
+@theme {
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --color-bg: #07080a;
+  --color-bg-2: #0c0d10;
+  --color-line: rgb(237 237 232 / 0.09);
+  --color-line-strong: rgb(237 237 232 / 0.18);
+  --color-fg: #ededE8;
+  --color-mute: #8b8e94;
+  --color-dim: #55585e;
+  --color-accent: #2f6bff;
+
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+:root {
+  --gutter: clamp(16px, 3.2vw, 48px);
+  --nav-h: 64px;
+  color-scheme: dark;
+}
+
+/* ───────────────────────── Base ───────────────────────── */
+/* Element defaults live in the base layer so Tailwind utilities can override them. */
+@layer base {
+html,
+body {
+  overflow-x: clip; /* no page-level horizontal overflow, without breaking sticky/pin */
+}
+
+html {
+  background: var(--color-bg);
+  -webkit-text-size-adjust: 100%;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Focus is always visible — a precise blue frame, never removed. */
+:focus-visible {
+  outline: 1px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: 0;
+}
+
+/* Custom cursor hides the system one only on fine pointers, only once it mounts. */
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+
+}
+
+/* ───────────────────────── Primitives ───────────────────────── */
+@utility meta {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+@utility gutter {
+  padding-inline: var(--gutter);
+}
+
+@utility display {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  line-height: 0.82;
+  text-transform: uppercase;
+}
+
+@utility hairline {
+  height: 1px;
+  background: var(--color-line);
+}
+
+/* Masked line used by SplitText line reveals */
+.line-mask {
+  /* clip vertically only, so horizontal type drift is never cut */
+  overflow-x: visible;
+  overflow-y: clip;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Outline display type for the hero */
+.type-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(237 237 232 / 0.55);
+}
+
+/* Faint 12-col grid used in the hero / intro */
+.grid-overlay {
+  background-image: linear-gradient(to right, var(--color-line) 1px, transparent 1px);
+  background-size: calc((100% - 2 * var(--gutter)) / 12) 100%;
+  background-position: var(--gutter) 0;
+  background-repeat: repeat-x;
+  mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 70%, transparent);
+}
+
+/* Status LED */
+.led {
+  width: 6px;
+  height: 6px;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 0 rgb(47 107 255 / 0.5);
+  animation: led 2.4s var(--ease-io) infinite;
+}
+@keyframes led {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(47 107 255 / 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgb(47 107 255 / 0);
+  }
+}
+
+/* Constellation packets travelling along edges */
+.edge-flow {
+  stroke-dasharray: 2 18;
+  animation: flow 3.2s linear infinite;
+}
+@keyframes flow {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+/* Film grain — very low, adds tooth to flat black */
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: -50%;
+  z-index: 60;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@keyframes eq {
+  to {
+    transform: scaleY(0.35);
+  }
+}
+
+/* ───────────────────────── Cursor ───────────────────────── */
+.cursor {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.cursor-ring,
+.cursor-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+.cursor-ring {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgb(237 237 232 / 0.3);
+  transition:
+    width 0.45s var(--ease-expo),
+    height 0.45s var(--ease-expo),
+    background-color 0.3s,
+    border-color 0.3s;
+}
+.cursor-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--color-fg);
+  transition:
+    opacity 0.2s,
+    width 0.2s,
+    height 0.2s;
+}
+.cursor.is-down .cursor-dot {
+  width: 2px;
+  height: 2px;
+}
+.cursor-label,
+.cursor-coords {
+  position: absolute;
+  opacity: 0;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.cursor-coords {
+  left: calc(100% + 10px);
+  top: 50%;
+  translate: 0 -50%;
+  color: var(--color-mute);
+  font-size: 10px;
+}
+
+.cursor[data-mode='link'] .cursor-ring {
+  width: 40px;
+  height: 40px;
+  border-color: var(--color-accent);
+}
+.cursor[data-mode='view'] .cursor-ring {
+  width: 76px;
+  height: 76px;
+  background: var(--color-fg);
+  border-color: transparent;
+}
+.cursor[data-mode='view'] .cursor-label {
+  opacity: 1;
+  color: var(--color-bg);
+}
+.cursor[data-mode='view'] .cursor-dot {
+  opacity: 0;
+}
+.cursor[data-mode='canvas'] .cursor-ring {
+  width: 14px;
+  height: 14px;
+  border-color: var(--color-accent);
+  rotate: 45deg;
+}
+.cursor[data-mode='canvas'] .cursor-coords {
+  opacity: 1;
+}
+
+/* ───────────────────────── Hero type ───────────────────────── */
+/* Each word is sized to its own measure. On mobile the short words grow so the
+   column reads as a deliberate stack rather than a shrunken desktop line. */
+.hero-word {
+  /* EXPERIENCES. is ~6.9em wide; 12.6vw keeps it inside the gutters at every width */
+  font-size: clamp(2rem, 12.6vw, 15rem);
+  will-change: transform;
+}
+.hero-word--a {
+  font-size: clamp(3rem, 24vw, 15rem);
+}
+.hero-word--b {
+  font-size: clamp(3rem, 19.5vw, 15rem);
+  font-weight: 300;
+}
+@media (min-width: 768px) {
+  .hero-word--a,
+  .hero-word--b {
+    font-size: clamp(3rem, 12.6vw, 15rem);
+  }
+}
+.hero-note {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 0.9em;
+  color: var(--color-dim);
+}
+@media (min-width: 768px) {
+  .hero-note {
+    display: block;
+    top: 1.4em;
+  }
+}
+
+.scroll-tick {
+  animation: tick 2.2s var(--ease-io) infinite;
+}
+@keyframes tick {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(200%);
+  }
+}
+
+/* ───────────────────────── About ───────────────────────── */
+.about-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18vh;
+}
+/* Full choreography only where it actually runs (mirrors MEDIA.desktop in useGsap). */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .about-stage {
+    height: 100svh;
+    padding-top: calc(var(--nav-h) + 24px);
+    padding-bottom: 32px;
+  }
+  .about-stack {
+    display: grid;
+    gap: 0;
+  }
+  /* diagonal composition: keyword hangs from the top-left, statement lands bottom-right */
+  .about-beat {
+    grid-area: 1 / 1;
+    grid-template-rows: 1fr;
+  }
+  .about-beat > :first-child {
+    align-self: start;
+  }
+  .about-progress {
+    display: block;
+  }
+}
+
+/* ───────────────────────── Work: shared ───────────────────────── */
+.frame {
+  border: 1px solid var(--color-line);
+}
+.crop {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: rgb(237 237 232 / 0.5);
+  border-style: solid;
+  border-width: 0;
+}
+.crop--tl { top: 8px; left: 8px; border-top-width: 1px; border-left-width: 1px; }
+.crop--tr { top: 8px; right: 8px; border-top-width: 1px; border-right-width: 1px; }
+.crop--bl { bottom: 8px; left: 8px; border-bottom-width: 1px; border-left-width: 1px; }
+.crop--br { bottom: 8px; right: 8px; border-bottom-width: 1px; border-right-width: 1px; }
+
+.panel-node {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border: 1px solid var(--color-mute);
+  background: var(--color-bg);
+  transition:
+    background-color 0.4s,
+    border-color 0.4s,
+    box-shadow 0.6s;
+}
+.panel-node.is-active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px rgb(47 107 255 / 0.15);
+}
+.work-bus-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent);
+}
+.work-bus-head {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: var(--color-accent);
+}
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 16px;
+}
+.panel-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.panel-title {
+  line-height: 0.92;
+  text-wrap: balance;
+}
+.panel-visual a {
+  display: block;
+}
+.panel-visual img,
+.panel-visual svg {
+  transition: transform 1.2s var(--ease-expo);
+}
+.panel-visual a:hover svg,
+.panel-visual a:hover img,
+.panel-visual a:focus-visible img {
+  transform: scale(1.03);
+}
+
+/* ───────────────────────── Work: vertical spine (default) ───────────────────────── */
+.work-header {
+  padding-top: 12vh;
+}
+.work-track {
+  position: relative;
+  padding: 10vh var(--gutter) 12vh;
+}
+.work-bus {
+  position: absolute;
+  top: var(--bus-top, 70vh);
+  bottom: 12vh;
+  left: calc(var(--gutter) + 2.5px);
+  width: 1px;
+  background: var(--color-line);
+}
+.work-bus-fill {
+  transform-origin: top;
+  transform: scaleY(0);
+  opacity: 0.6;
+}
+.work-bus-head {
+  bottom: -2px;
+  left: -2px;
+}
+.work-intro {
+  padding-bottom: 14vh;
+}
+.work-hint {
+  display: none;
+}
+.panel {
+  position: relative;
+  padding-left: 28px;
+  padding-bottom: 16vh;
+}
+.panel-head {
+  margin-left: -28px;
+  margin-bottom: 20px;
+}
+.panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.panel-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.panel--feature .panel-title { font-size: clamp(2.5rem, 11vw, 5rem); }
+.panel--split .panel-title { font-size: clamp(2rem, 8.5vw, 4rem); }
+.panel--compact .panel-title { font-size: clamp(1.75rem, 7vw, 3rem); }
+.panel--split .panel-visual { margin-left: 10%; }
+.panel--compact .panel-visual { width: 72%; }
+.panel--compact.panel--flip .panel-visual { margin-left: auto; }
+.panel--split:not(.panel--flip) .panel-copy { order: -1; }
+.work-outro {
+  padding-left: 28px;
+}
+
+/* wide screens without the horizontal track (reduced motion, large touch screens) */
+@media (min-width: 1024px) {
+  .panel-body { max-width: 1180px; }
+  .panel--feature .panel-visual { max-width: 980px; }
+}
+@media (min-width: 640px) {
+  .panel--split .panel-visual { width: 80%; }
+  .panel--compact .panel-visual { width: 52%; }
+  .panel-copy { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: 32px; }
+}
+
+/* ───────────────────────── Work: horizontal (desktop + motion) ───────────────────────── */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .work-pin {
+    position: relative;
+    height: 100svh;
+    overflow: clip;
+  }
+  .work-header {
+    position: absolute;
+    inset: calc(var(--nav-h) + 12px) 0 auto;
+    padding-top: 0;
+    z-index: 2;
+  }
+  .work-track {
+    --top: calc(var(--nav-h) + 96px);
+    display: flex;
+    align-items: stretch;
+    width: max-content;
+    height: 100%;
+    padding: var(--top) 0 5vh var(--gutter);
+    will-change: transform;
+  }
+  .work-bus {
+    top: calc(var(--top) + 7.5px);
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: auto;
+    height: 1px;
+    background: transparent;
+  }
+  .work-bus-fill {
+    transform-origin: left;
+    transform: scaleX(0);
+    opacity: 0.6;
+  }
+  .work-bus-head {
+    display: none;
+  }
+  .work-intro {
+    flex: none;
+    width: 36vw;
+    padding: 0 6vw 0 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .work-hint {
+    display: block;
+  }
+  .panel {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0 6vw 0 0;
+  }
+  .panel-head {
+    margin: 0 -6vw 0 0;
+  }
+  .panel-head .hairline {
+    background: var(--color-line);
+  }
+  .panel-body {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    gap: 2.5vw;
+    margin-top: 5vh;
+  }
+  .panel-body {
+    max-width: none;
+  }
+  .panel-visual,
+  .panel--split .panel-visual,
+  .panel--compact .panel-visual,
+  .panel--compact.panel--flip .panel-visual,
+  .panel--feature .panel-visual {
+    width: auto;
+    max-width: none;
+    margin: 0;
+  }
+  .panel-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  /* feature: wide image, title crossing its edge */
+  .panel--feature { width: 84vw; }
+  .panel--feature .panel-body {
+    grid-template-columns: 1.75fr 1fr;
+    align-items: end;
+  }
+  .panel--feature .panel-copy { justify-content: flex-end; padding-bottom: 2vh; }
+  .panel--feature .panel-title {
+    font-size: clamp(3rem, 6.2vw, 7.5rem);
+    position: relative;
+    z-index: 2;
+    margin-left: -14vw;
+  }
+  .panel--feature.panel--flip .panel-body { grid-template-columns: 1fr 1.75fr; align-items: start; }
+  .panel--feature.panel--flip .panel-copy { order: -1; justify-content: flex-start; padding: 6vh 0 0; }
+  .panel--feature.panel--flip .panel-title { margin: 0 -14vw 0 0; text-align: right; }
+  .panel--feature.panel--flip .panel-meta { align-items: flex-end; text-align: right; }
+  .panel--feature.panel--flip .panel-visual { align-self: end; }
+
+  /* split: title and meta side by side over (or under) the image */
+  .panel--split { width: 58vw; }
+  /* copy first (rows: auto, image); flipped panels put the image first */
+  .panel--split .panel-body { grid-template-rows: auto minmax(0, 1fr); }
+  .panel--split.panel--flip .panel-body { grid-template-rows: minmax(0, 1fr) auto; }
+  .panel--split .panel-visual { display: flex; flex-direction: column; min-height: 0; }
+  .panel--split .panel-visual > a { flex: 1 1 auto; min-height: 0; max-height: 42vh; }
+  .panel--split .panel-visual .frame { height: 100%; max-height: 42vh; }
+  .panel--split .panel-copy {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    align-items: end;
+    gap: 3vw;
+  }
+  .panel--split .panel-title { font-size: clamp(2.25rem, 4vw, 4.5rem); }
+
+  /* compact: narrow and tall, small title */
+  .panel--compact { width: 34vw; }
+  /* the image takes whatever height the copy leaves (capped), so the panel never overflows */
+  .panel--compact .panel-body { grid-template-rows: minmax(0, 1fr) auto; }
+  .panel--compact.panel--flip .panel-body { grid-template-rows: auto minmax(0, 1fr); }
+  .panel--compact .panel-visual { display: flex; flex-direction: column; min-height: 0; }
+  .panel--compact.panel--flip .panel-visual { justify-content: flex-end; }
+  .panel--compact .panel-visual > a { flex: 1 1 auto; min-height: 0; max-height: 48vh; }
+  .panel--compact .panel-visual .frame { height: 100%; max-height: 48vh; }
+  .panel--compact .panel-title { font-size: clamp(1.75rem, 2.6vw, 2.75rem); }
+  .panel--compact.panel--flip .panel-copy { order: -1; }
+
+  .work-outro {
+    flex: none;
+    width: 42vw;
+    padding: 0 var(--gutter) 0 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+/* ───────────────────────── Skills ───────────────────────── */
+.skill-dot {
+  animation: breathe 3.6s var(--ease-io) infinite;
+}
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* Project screenshots: most are light UIs. At rest they sit dimmed and desaturated so the
+   track stays dark; the current panel (or hover/focus) brings its preview to full colour. */
+.panel-visual img {
+  filter: grayscale(0.85) brightness(0.55) contrast(1.05);
+  transition:
+    filter 0.9s var(--ease-expo),
+    transform 1.2s var(--ease-expo);
+}
+.panel.is-current .panel-visual img,
+.panel-visual a:hover img,
+.panel-visual a:focus-visible img {
+  filter: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .panel-visual img {
+    filter: none;
+  }
+}

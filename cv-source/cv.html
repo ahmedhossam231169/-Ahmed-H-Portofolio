@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ahmed Hossam — Frontend Developer — CV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 14mm 15mm 14mm 15mm; }
+  :root { --ink: #16181d; --mute: #4a4f59; --dim: #7a808a; --line: #d9dce1; --accent: #1f4fd1; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Inter, "Segoe UI", Arial, sans-serif; color: var(--ink); font-size: 9.6pt; line-height: 1.42; }
+  a { color: inherit; text-decoration: none; }
+
+  header { padding-bottom: 9pt; border-bottom: 1.4pt solid var(--ink); }
+  h1 { font-size: 22pt; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+  .role { font-size: 11pt; font-weight: 500; color: var(--accent); margin-top: 2pt; }
+  .contact { margin-top: 6pt; color: var(--mute); font-size: 8.8pt; display: flex; flex-wrap: wrap; gap: 2pt 0; }
+  .contact span:not(:last-child)::after { content: "·"; margin: 0 6pt; color: var(--dim); }
+  .contact a { color: var(--ink); }
+
+  section { margin-top: 11pt; }
+  h2 { font-size: 9pt; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
+       padding-bottom: 3pt; border-bottom: 0.6pt solid var(--line); margin-bottom: 6pt; }
+  p.summary { color: var(--ink); }
+
+  .skills { display: grid; grid-template-columns: 34mm 1fr; gap: 2.5pt 8pt; }
+  .skills dt { font-weight: 600; }
+  .skills dd { color: var(--mute); }
+
+  .item { margin-bottom: 8.5pt; break-inside: avoid; }
+  .item:last-child { margin-bottom: 0; }
+  .item-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10pt; }
+  .item-title { font-size: 10.4pt; font-weight: 600; }
+  .item-title .sub { font-weight: 400; color: var(--mute); }
+  .date { color: var(--dim); font-size: 8.8pt; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .meta { color: var(--mute); font-size: 8.8pt; margin-top: 1pt; }
+  .meta a { color: var(--accent); }
+  .stack { color: var(--dim); font-size: 8.6pt; margin-top: 2.5pt; }
+  .stack b { color: var(--mute); font-weight: 600; }
+  ul { margin: 3pt 0 0 12pt; }
+  li { margin-bottom: 1.6pt; padding-left: 1pt; }
+  li::marker { color: var(--dim); }
+  li b { font-weight: 600; }
+
+  .edu .item { margin-bottom: 6pt; }
+  .lang { display: flex; gap: 18pt; }
+  .lang b { font-weight: 600; }
+  .lang span { color: var(--mute); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Ahmed Hossam</h1>
+  <div class="role">Frontend Developer — React · Next.js · TypeScript</div>
+  <div class="contact">
+    <span>Alexandria, Egypt</span>
+    <span><a href="tel:+201210705553">+20 121 070 5553</a> (WhatsApp)</span>
+    <span><a href="mailto:ah7428839@gmail.com">ah7428839@gmail.com</a></span>
+    <span><a href="https://ahmedhossam231169.github.io/Ahmed-Hossam-Portfolio/">Portfolio</a></span>
+    <span><a href="https://github.com/ahmedhossam231169">github.com/ahmedhossam231169</a></span>
+    <span><a href="https://www.linkedin.com/in/ahmed-hossam-843391366">linkedin.com/in/ahmed-hossam</a></span>
+  </div>
+</header>
+
+<section>
+  <h2>Summary</h2>
+  <p class="summary">
+    Frontend developer who builds responsive, user-focused web applications with React, Next.js, TypeScript and
+    Tailwind CSS. Graduate of Route Academy’s accredited Front-End Development Diploma. I have shipped projects end to
+    end, from framework-free single-page apps to a full-stack developer community platform with a Node.js and PostgreSQL
+    backend and real-time chat. I use AI-assisted development to work faster, I learn quickly on my own, and I care about
+    clean, maintainable code.
+  </p>
+</section>
+
+<section>
+  <h2>Skills</h2>
+  <dl class="skills">
+    <dt>Languages</dt><dd>JavaScript (ES6+), TypeScript, HTML5, CSS3</dd>
+    <dt>Frontend</dt><dd>React, Next.js (App Router), React Router, Context API, React Hook Form, Zod, NextAuth</dd>
+    <dt>Styling</dt><dd>Tailwind CSS, Bootstrap, responsive and RTL layouts</dd>
+    <dt>Backend</dt><dd>Node.js, Express, Prisma, PostgreSQL, Socket.IO, REST APIs, JWT &amp; OAuth</dd>
+    <dt>Tools</dt><dd>Git, GitHub, GitLab, GitHub Actions, Docker, Vite, Vercel</dd>
+    <dt>Other</dt><dd>AI-assisted development (Claude), technical research &amp; documentation</dd>
+  </dl>
+</section>
+
+<section>
+  <h2>Projects</h2>
+
+  <div class="item">
+    <div class="item-head">
+      <div class="item-title">LoopIn <span class="sub">— Full-Stack Social Platform for Developers &amp; Recruiters</span></div>
+      <div class="date">06/2026 – 09/2026</div>
+    </div>
+    <div class="meta"><a href="https://loopin-beta-lovat.vercel.app">loopin-beta-lovat.vercel.app</a> · <a href="https://github.com/ahmedhossam231169/LoopIn">GitHub</a></div>
+    <ul>
+      <li>Designed and built a full-stack platform connecting developers and tech recruiters: a <b>React + TypeScript</b> front end and a <b>Node.js / Express</b> REST API (~76 endpoints) on <b>PostgreSQL</b> via <b>Prisma</b>.</li>
+      <li>Implemented <b>real-time chat</b>, typing indicators, online presence and live notifications with <b>Socket.IO</b>.</li>
+      <li>Built a social feed with code snippets (Markdown + syntax highlighting), reactions, reposts and comments, plus friends, follows, communities and pages.</li>
+      <li>Added recruiter tools: <b>talent search</b> with skill filters, candidate shortlists and job postings.</li>
+      <li>Secured the app with JWT, <b>GitHub &amp; Google OAuth</b>, rotating refresh tokens, bcrypt, rate limiting, Helmet and Zod validation.</li>
+      <li>Containerised with Docker and set up a <b>GitHub Actions</b> CI pipeline (type-check, tests, build); built a responsive dark/light UI.</li>
+    </ul>
+  </div>
+
+  <div class="item">
+    <div class="item-head">
+      <div class="item-title">RoutePosts <span class="sub">— Social Media Web App</span></div>
+      <div class="date">08/2026 – 09/2026</div>
+    </div>
+    <div class="meta"><a href="https://route-posts-iota.vercel.app">route-posts-iota.vercel.app</a> · <a href="https://github.com/ahmedhossam231169/RoutePosts">GitHub</a></div>
+    <ul>
+      <li>Built a social media single-page app in <b>React + TypeScript</b> on a REST API: sign up, log in, posts, comments, likes and notifications.</li>
+      <li>Added token-based auth with React Context and <b>protected routes</b>; an expired token (401) logs the user out automatically.</li>
+      <li>Built full CRUD for posts (text and image upload via FormData, with preview) and comments, including an emoji picker.</li>
+      <li>Made likes update instantly (<b>optimistic UI</b>) and roll back with an error message if the request fails.</li>
+      <li>Validated forms with <b>Zod + React Hook Form</b> (18+ age check, password match, per-field errors); added skeleton loaders and toasts.</li>
+      <li>Structured the code in layers (API services, shared types, reusable components, separate layouts); styled with Tailwind CSS v4 and deployed on Vercel.</li>
+    </ul>
+  </div>
+
+  <div class="item">
+    <div class="item-head">
+      <div class="item-title">FreshCart <span class="sub">— E-commerce Store</span></div>
+      <div class="date">09/2026 – Present</div>
+    </div>
+    <ul>
+      <li>Building an online store in <b>Next.js (App Router) + TypeScript</b>: products, categories, brands, product details, cart and wishlist.</li>
+      <li>Implemented authentication with <b>NextAuth</b> (credentials + JWT session) and route protection that redirects guests to login.</li>
+      <li>Live cart and wishlist counters in the navbar via Context and server actions; UI built with Tailwind CSS and shadcn/ui.</li>
+    </ul>
+  </div>
+
+  <div class="item">
+    <div class="item-head">
+      <div class="item-title">Wanderlust <span class="sub">— Travel Planning Dashboard</span></div>
+      <div class="date">07/2026</div>
+    </div>
+    <div class="meta"><a href="https://ahmedhossam231169.github.io/Wanderlust/">ahmedhossam231169.github.io/Wanderlust</a> · <a href="https://github.com/ahmedhossam231169/Wanderlust">GitHub</a></div>
+    <ul>
+      <li>Built a single-page dashboard in <b>vanilla JavaScript (ES modules)</b> with no framework, split into services, views, state and UI layers.</li>
+      <li>Integrated public REST APIs (Open-Meteo, Nager.Date, Ticketmaster, ExchangeRate API) for weather, holidays, long weekends, events and currency conversion.</li>
+      <li>Cached API responses in memory to avoid repeated requests; saved trip plans to localStorage.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="edu">
+  <h2>Education &amp; Training</h2>
+
+  <div class="item">
+    <div class="item-head">
+      <div class="item-title">Diploma in Front-End Development <span class="sub">— Route Academy, Alexandria</span></div>
+      <div class="date">02/2025 – 09/2026</div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="item-head">
+      <div class="item-title">Digitera Program, Technical Track <span class="sub">— iCareer &amp; Plan International Egypt</span></div>
+      <div class="date">09/2026</div>
+    </div>
+    <div class="meta">Certificate of completion. Part of the “Ready for Tomorrow” youth employment program, supported by the Ministry of Foreign Affairs of Denmark.</div>
+  </div>
+
+  <div class="item">
+    <div class="item-head">
+      <div class="item-title">Claude 101 <span class="sub">— Anthropic Academy</span></div>
+      <div class="date">08/2026</div>
+    </div>
+    <div class="meta">Prompting techniques, practical use cases and best practices for AI-assisted work.</div>
+  </div>
+
+  <div class="item">
+    <div class="item-head">
+      <div class="item-title">Bachelor’s Degree in Sports Science <span class="sub">— Alexandria University</span></div>
+      <div class="date">2022 – 2026</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Languages</h2>
+  <div class="lang">
+    <div><b>Arabic</b> <span>— Native</span></div>
+    <div><b>English</b> <span>— Intermediate (B1)</span></div>
+  </div>
+</section>
+
+</body>
+</html>
