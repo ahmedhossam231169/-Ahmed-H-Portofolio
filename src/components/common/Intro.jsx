@@ -5,10 +5,12 @@ import { startScroll, stopScroll } from '../../animations/scroll/lenis'
 import { site } from '../../data/site'
 
 /**
- * Opening sequence: ~2.4s, skippable (button, Esc, Enter, Space).
- * A small system graph assembles while the identity types in, then the panel
- * wipes upward and the hero takes over. Hero reveal starts during the wipe,
- * so there is no "loaded" pause.
+ * Opening sequence: 8s, skippable (button, Esc, Enter, Space).
+ *   0.0–2.9  the system graph assembles: nodes appear, edges draw in
+ *   1.4–4.0  identity: name, then both roles
+ *   4.2–6.4  a signal travels through the graph and settles on the active node
+ *   6.9–8.0  hand-over: content lifts away, the panel wipes up into the hero
+ * The hero reveal starts during the wipe, so there is no "loaded" pause.
  */
 
 // Small fixed system graph: [x, y] in a 0..100 box.
@@ -18,7 +20,12 @@ const NODES = [
 const EDGES = [
   [0, 1], [0, 2], [1, 3], [1, 4], [2, 4], [4, 5], [3, 5], [4, 6], [5, 7], [6, 5],
 ]
-const ACTIVE = 5
+// Route the signal takes (node indexes, each hop is an edge above). It ends on the active node.
+const SIGNAL = [0, 1, 4, 5]
+const EXIT = 6.9 // hand-over start; the wipe ends at 8.0s
+const ACCENT = '#2f6bff'
+const NODE = '#ededE8'
+const EDGE = 'rgb(237 237 232 / .35)'
 
 export default function Intro({ onDone }) {
   const root = useRef(null)
@@ -46,20 +53,35 @@ export default function Intro({ onDone }) {
       gsap.set(edges, { strokeDasharray: 1, strokeDashoffset: 1 }) // pathLength=1 on each edge
 
       const t = gsap.timeline({ defaults: { ease: 'expo.out' }, onComplete: finish })
-      t.from(q('[data-intro-grid]'), { autoAlpha: 0, duration: 0.6, ease: 'none' }, 0)
-        .from(q('[data-node]'), { scale: 0, transformOrigin: '50% 50%', duration: 0.5, stagger: 0.05 }, 0.1)
-        .to(edges, { strokeDashoffset: 0, duration: 0.7, stagger: 0.04, ease: 'power2.inOut' }, 0.2)
-        .to(q('[data-node-active]'), { fill: '#2f6bff', duration: 0.2, ease: 'none' }, 0.9)
-        .from(name.chars, { yPercent: 110, duration: 0.9, stagger: 0.025 }, 0.25)
-        .from(q('[data-intro-role]'), { yPercent: 110, duration: 0.8, stagger: 0.12 }, 0.7)
-        .from(q('[data-intro-meta]'), { autoAlpha: 0, duration: 0.5, stagger: 0.05, ease: 'none' }, 0.2)
-        .to(q('[data-intro-progress]'), { scaleX: 1, duration: 1.9, ease: 'power1.inOut' }, 0)
-        .addLabel('exit', 2.0)
+      t.from(q('[data-intro-grid]'), { autoAlpha: 0, duration: 1, ease: 'none' }, 0)
+        .from(q('[data-intro-meta]'), { autoAlpha: 0, duration: 0.6, stagger: 0.15, ease: 'none' }, 0.3)
+        .to(q('[data-intro-progress]'), { scaleX: 1, duration: EXIT, ease: 'power1.inOut' }, 0)
+        // 1. the system assembles
+        .from(q('[data-node]'), { scale: 0, transformOrigin: '50% 50%', duration: 0.6, stagger: 0.12 }, 0.4)
+        .to(edges, { strokeDashoffset: 0, duration: 1.1, stagger: 0.12, ease: 'power2.inOut' }, 0.7)
+        // 2. identity
+        .from(name.chars, { yPercent: 110, duration: 1.2, stagger: 0.05 }, 1.4)
+        .from(q('[data-intro-role]'), { yPercent: 110, duration: 1, stagger: 0.5 }, 3)
+
+      // 3. a signal runs node → node; each node it leaves cools back down, the last one stays lit
+      SIGNAL.forEach((n, k) => {
+        const at = 4.2 + k * 0.5
+        const node = q(`[data-node-index="${n}"]`)
+        t.to(node, { fill: ACCENT, duration: 0.2, ease: 'none' }, at)
+        const next = SIGNAL[k + 1]
+        if (next === undefined) return
+        const edge = q(`[data-edge-key="${n}-${next}"], [data-edge-key="${next}-${n}"]`)
+        t.to(edge, { stroke: ACCENT, duration: 0.25, ease: 'none' }, at + 0.1)
+          .to(edge, { stroke: EDGE, duration: 0.6, ease: 'none' }, at + 0.6)
+          .to(node, { fill: NODE, duration: 0.4, ease: 'none' }, at + 0.6)
+      })
+
+      t.addLabel('exit', EXIT)
         // Publish from a microtask so nothing the hand-over triggers is filed under this context
         // (and torn down with it when the intro unmounts).
         .call(() => queueMicrotask(() => setState({ introDone: true })), null, 'exit')
-        .to(q('[data-intro-content]'), { yPercent: -12, autoAlpha: 0, duration: 0.7, ease: 'power3.in' }, 'exit')
-        .to(root.current, { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.9, ease: 'expo.inOut' }, 'exit+=0.15')
+        .to(q('[data-intro-content]'), { yPercent: -12, autoAlpha: 0, duration: 0.8, ease: 'power3.in' }, 'exit')
+        .to(root.current, { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.9, ease: 'expo.inOut' }, 'exit+=0.2')
 
       tl.current = t
     }, root)
@@ -113,12 +135,13 @@ export default function Intro({ onDone }) {
               <line
                 key={i}
                 data-edge
+                data-edge-key={`${a}-${b}`}
                 pathLength="1"
                 x1={NODES[a][0]}
                 y1={NODES[a][1]}
                 x2={NODES[b][0]}
                 y2={NODES[b][1]}
-                stroke="rgb(237 237 232 / .35)"
+                stroke={EDGE}
                 strokeWidth="1"
                 vectorEffect="non-scaling-stroke"
               />
@@ -127,12 +150,12 @@ export default function Intro({ onDone }) {
               <rect
                 key={i}
                 data-node
-                {...(i === ACTIVE ? { 'data-node-active': true } : {})}
+                data-node-index={i}
                 x={x - 1.1}
                 y={y - 2}
                 width="2.2"
                 height="4"
-                fill="#ededE8"
+                fill={NODE}
               />
             ))}
           </svg>

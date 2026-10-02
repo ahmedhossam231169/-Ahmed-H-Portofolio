@@ -7,7 +7,7 @@ Typography is the content. The 3D scene sits behind it as atmosphere.
 ## 1. Information architecture
 
 ```
-[Intro]   ~2s, skippable · name → role → node graph assembles → wipes into hero
+[Intro]   8s, skippable · graph assembles → name → roles → signal runs through the graph → wipes into hero
 00 Hero   BUILD / DIGITAL / EXPERIENCES.   (pinned, typography transforms on scroll)
 01 About    three beats from the CV (who · how I got here · what I care about), word-by-word scrub
            + one meta line: location · languages · ● open to work
