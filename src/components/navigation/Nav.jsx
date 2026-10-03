@@ -4,6 +4,7 @@ import { sections, site } from '../../data/site'
 import { useStore } from '../../hooks/useStore'
 import { scrollToTarget } from '../../animations/scroll/lenis'
 import SoundToggle from '../ui/SoundToggle'
+import ThemeToggle from '../ui/ThemeToggle'
 
 const EASE = [0.16, 1, 0.3, 1]
 
@@ -119,7 +120,8 @@ export default function Nav() {
           })}
         </ol>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 sm:gap-6">
+          <ThemeToggle />
           <SoundToggle />
           <button
             ref={menuBtn}
@@ -183,7 +185,7 @@ function Mark() {
   return (
     <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" className="shrink-0">
       <path d="M5 17 17 5" stroke="currentColor" strokeWidth="1" className="text-mute" />
-      <rect x="3" y="15" width="4" height="4" fill="#ededE8" />
+      <rect x="3" y="15" width="4" height="4" className="fill-fg" />
       <rect x="15" y="3" width="4" height="4" className="fill-accent" />
     </svg>
   )

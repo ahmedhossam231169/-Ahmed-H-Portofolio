@@ -1,6 +1,9 @@
 import { memo, useMemo } from 'react'
 import { VIEW, neighbours } from './layout'
 import { categories } from '../../data/skills'
+
+// Theme foreground at a given strength. SVG attributes can't read CSS variables; styles can.
+const fgMix = (pct) => `color-mix(in oklab, var(--color-fg) ${pct}%, transparent)`
 import { play } from '../../utils/sound'
 
 /**
@@ -27,7 +30,7 @@ function Constellation({ layout, skills, selected, onSelect }) {
             rx={VIEW.rx * r}
             ry={VIEW.ry * r}
             fill="none"
-            stroke="rgb(237 237 232 / .05)"
+            style={{ stroke: fgMix(6) }}
             strokeDasharray="2 6"
             data-orbit
           />
@@ -46,12 +49,14 @@ function Constellation({ layout, skills, selected, onSelect }) {
                 y1={A.y}
                 x2={B.x}
                 y2={B.y}
-                stroke={on ? '#2f6bff' : 'rgb(237 237 232 / .16)'}
                 strokeOpacity={on ? 0.85 : e.kind === 'related' ? 0.5 : 1}
                 strokeDasharray={e.kind === 'related' && !on ? '0.01 0.015' : undefined}
                 strokeWidth="1"
                 vectorEffect="non-scaling-stroke"
-                style={{ transition: 'stroke .4s, stroke-opacity .4s' }}
+                style={{
+                  stroke: on ? 'var(--color-accent)' : fgMix(16),
+                  transition: 'stroke .4s, stroke-opacity .4s',
+                }}
               />
               {on && (
                 <line
@@ -59,7 +64,7 @@ function Constellation({ layout, skills, selected, onSelect }) {
                   y1={A.y}
                   x2={B.x}
                   y2={B.y}
-                  stroke="#ededE8"
+                  style={{ stroke: 'var(--color-fg)' }}
                   strokeWidth="1.5"
                   className="edge-flow"
                   vectorEffect="non-scaling-stroke"

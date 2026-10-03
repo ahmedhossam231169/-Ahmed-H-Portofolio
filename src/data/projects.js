@@ -63,8 +63,8 @@ export const projects = [
       'Server actions and Context',
     ],
     tech: ['Next.js 16', 'React 19', 'TypeScript', 'NextAuth', 'Tailwind CSS v4', 'shadcn/ui'],
-    live: null, // not deployed yet
-    github: null, // not pushed yet
+    live: 'https://fresh-cart-sooty-eta.vercel.app',
+    github: 'https://github.com/ahmedhossam231169/FreshCart',
     image: img('freshcart'),
     scale: 3,
   },

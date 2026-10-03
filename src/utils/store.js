@@ -17,6 +17,8 @@ export const store = {
     section: 'hero',
     introDone: false,
     sound: false,
+    // set before first paint by the inline script in index.html
+    theme: typeof document !== 'undefined' && document.documentElement.dataset.theme === 'light' ? 'light' : 'dark',
   },
 }
 

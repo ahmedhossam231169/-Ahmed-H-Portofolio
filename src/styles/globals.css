@@ -24,6 +24,35 @@
   color-scheme: dark;
 }
 
+/* Light theme: the same system on paper. Set by data-theme="light" on <html>
+   (ThemeToggle, plus an inline script in index.html that applies it before first paint). */
+:root[data-theme='light'] {
+  --color-bg: #f2f1ec;
+  --color-bg-2: #e8e7e1;
+  --color-line: rgb(12 13 15 / 0.1);
+  --color-line-strong: rgb(12 13 15 / 0.2);
+  --color-fg: #0c0d0f;
+  --color-mute: #5b5e64;
+  --color-dim: #85888e;
+  --color-accent: #2453f2;
+  color-scheme: light;
+}
+
+/* While the theme switches, colours cross-fade instead of snapping. */
+@media (prefers-reduced-motion: no-preference) {
+  html.theme-anim,
+  html.theme-anim *,
+  html.theme-anim *::before,
+  html.theme-anim *::after {
+    transition:
+      background-color 0.5s var(--ease-io),
+      border-color 0.5s var(--ease-io),
+      color 0.5s var(--ease-io),
+      fill 0.5s var(--ease-io),
+      stroke 0.5s var(--ease-io) !important;
+  }
+}
+
 /* ───────────────────────── Base ───────────────────────── */
 /* Element defaults live in the base layer so Tailwind utilities can override them. */
 @layer base {
@@ -141,7 +170,7 @@ html.has-cursor * {
 /* Outline display type for the hero */
 .type-outline {
   color: transparent;
-  -webkit-text-stroke: 1px rgb(237 237 232 / 0.55);
+  -webkit-text-stroke: 1px color-mix(in oklab, var(--color-fg) 55%, transparent);
 }
 
 /* Faint 12-col grid used in the hero / intro */
@@ -228,7 +257,7 @@ html.has-cursor * {
   place-items: center;
   width: 28px;
   height: 28px;
-  border: 1px solid rgb(237 237 232 / 0.3);
+  border: 1px solid color-mix(in oklab, var(--color-fg) 30%, transparent);
   transition:
     width 0.45s var(--ease-expo),
     height 0.45s var(--ease-expo),
@@ -371,12 +400,16 @@ html.has-cursor * {
 /* ───────────────────────── Work: shared ───────────────────────── */
 .frame {
   border: 1px solid var(--color-line);
+  /* The frame takes the screenshot's own proportions (--ar is set from the loaded image),
+     capped at --frame-h tall, so object-fit: cover never crops anything. */
+  aspect-ratio: var(--ar, 16 / 10);
+  width: min(100%, calc(var(--frame-h, 70vh) * var(--ar, 16 / 10)));
 }
 .crop {
   position: absolute;
   width: 10px;
   height: 10px;
-  border-color: rgb(237 237 232 / 0.5);
+  border-color: color-mix(in oklab, var(--color-fg) 50%, transparent);
   border-style: solid;
   border-width: 0;
 }
@@ -434,11 +467,7 @@ html.has-cursor * {
 .panel-visual svg {
   transition: transform 1.2s var(--ease-expo);
 }
-.panel-visual a:hover svg,
-.panel-visual a:hover img,
-.panel-visual a:focus-visible img {
-  transform: scale(1.03);
-}
+
 
 /* ───────────────────────── Work: vertical spine (default) ───────────────────────── */
 .work-header {
@@ -601,7 +630,7 @@ html.has-cursor * {
   }
 
   /* feature: wide image, title crossing its edge */
-  .panel--feature { width: 84vw; }
+  .panel--feature { width: 84vw; --frame-h: 56vh; }
   .panel--feature .panel-body {
     grid-template-columns: 1.75fr 1fr;
     align-items: end;
@@ -625,8 +654,7 @@ html.has-cursor * {
   .panel--split .panel-body { grid-template-rows: auto minmax(0, 1fr); }
   .panel--split.panel--flip .panel-body { grid-template-rows: minmax(0, 1fr) auto; }
   .panel--split .panel-visual { display: flex; flex-direction: column; min-height: 0; }
-  .panel--split .panel-visual > a { flex: 1 1 auto; min-height: 0; max-height: 42vh; }
-  .panel--split .panel-visual .frame { height: 100%; max-height: 42vh; }
+  .panel--split { --frame-h: 42vh; }
   .panel--split .panel-copy {
     display: grid;
     grid-template-columns: 1.1fr 1fr;
@@ -642,8 +670,7 @@ html.has-cursor * {
   .panel--compact.panel--flip .panel-body { grid-template-rows: auto minmax(0, 1fr); }
   .panel--compact .panel-visual { display: flex; flex-direction: column; min-height: 0; }
   .panel--compact.panel--flip .panel-visual { justify-content: flex-end; }
-  .panel--compact .panel-visual > a { flex: 1 1 auto; min-height: 0; max-height: 48vh; }
-  .panel--compact .panel-visual .frame { height: 100%; max-height: 48vh; }
+  .panel--compact { --frame-h: 48vh; }
   .panel--compact .panel-title { font-size: clamp(1.75rem, 2.6vw, 2.75rem); }
   .panel--compact.panel--flip .panel-copy { order: -1; }
 
@@ -679,13 +706,18 @@ html.has-cursor * {
     filter 0.9s var(--ease-expo),
     transform 1.2s var(--ease-expo);
 }
+/* on paper, darkening reads as dirt: the resting state washes out instead */
+:root[data-theme='light'] .panel-visual img {
+  filter: grayscale(0.9) opacity(0.6);
+}
 .panel.is-current .panel-visual img,
 .panel-visual a:hover img,
 .panel-visual a:focus-visible img {
-  filter: none;
+  filter: none !important;
 }
 @media (prefers-reduced-motion: reduce) {
-  .panel-visual img {
+  .panel-visual img,
+  :root[data-theme='light'] .panel-visual img {
     filter: none;
   }
 }

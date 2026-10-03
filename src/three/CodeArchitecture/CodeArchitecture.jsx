@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import Network from './Network'
+import Network, { PALETTES } from './Network'
+import { useStore } from '../../hooks/useStore'
 import { getQuality } from '../../utils/device'
 
 /**
@@ -10,6 +11,8 @@ import { getQuality } from '../../utils/device'
 export default function CodeArchitecture({ reduced }) {
   const [quality] = useState(getQuality)
   const [visible, setVisible] = useState(true)
+  const theme = useStore('theme')
+  const bg = (PALETTES[theme] || PALETTES.dark).bg
 
   // Stop rendering while the tab is hidden.
   useEffect(() => {
@@ -28,9 +31,9 @@ export default function CodeArchitecture({ reduced }) {
         camera={{ fov: 45, near: 0.1, far: 80, position: [0, 0, 22] }}
         gl={{ antialias: high, alpha: false, powerPreference: high ? 'high-performance' : 'low-power' }}
       >
-        <color attach="background" args={['#07080a']} />
-        <fog attach="fog" args={['#07080a', 10, 30]} />
-        <Network quality={quality} reduced={reduced} />
+        <color key={`bg-${theme}`} attach="background" args={[bg]} />
+        <fog key={`fog-${theme}`} attach="fog" args={[bg, 10, 30]} />
+        <Network quality={quality} reduced={reduced} theme={theme} />
       </Canvas>
     </div>
   )

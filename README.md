@@ -35,3 +35,4 @@ If a cover is missing, that panel shows a generated schematic instead.
 
 The intro plays once per browser session. Skip it with Esc, Enter, Space, or the "Skip intro" button.
 Interface sound is off by default and only starts after the user turns it on.
+A Dark / Light theme switch sits next to it in the nav; dark is the default and the choice is remembered.

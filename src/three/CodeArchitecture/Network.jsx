@@ -4,9 +4,21 @@ import * as THREE from 'three'
 import { buildGraph } from './buildGraph'
 import { store } from '../../utils/store'
 
-const FG = new THREE.Color('#ededE8')
-const MUTE = new THREE.Color('#6f7278')
-const ACCENT = new THREE.Color('#2f6bff')
+// Scene colours per theme. Light mode inverts the network: dark nodes and lines on paper.
+export const PALETTES = {
+  dark: {
+    bg: '#07080a',
+    fg: new THREE.Color('#ededE8'),
+    mute: new THREE.Color('#6f7278'),
+    accent: new THREE.Color('#2f6bff'),
+  },
+  light: {
+    bg: '#f2f1ec',
+    fg: new THREE.Color('#0c0d0f'),
+    mute: new THREE.Color('#9a9da3'),
+    accent: new THREE.Color('#2453f2'),
+  },
+}
 
 /**
  * Per-section scene state. The network is the backdrop for the whole site and
@@ -25,8 +37,9 @@ const PRESETS = {
 const tmp = new THREE.Object3D()
 const lerp = (a, b, t) => a + (b - a) * t
 
-export default function Network({ quality = 'high', reduced = false }) {
+export default function Network({ quality = 'high', reduced = false, theme = 'dark' }) {
   const high = quality === 'high'
+  const P = PALETTES[theme] || PALETTES.dark
   const { nodes, edges, adjacency, rand } = useMemo(
     () => buildGraph({ count: high ? 160 : 70, width: high ? 32 : 16, height: high ? 17 : 24 }),
     [high],
@@ -52,11 +65,11 @@ export default function Network({ quality = 'high', reduced = false }) {
       tmp.scale.setScalar(n.hub ? 1.6 : n.active ? 1.3 : 1)
       tmp.updateMatrix()
       m.setMatrixAt(i, tmp.matrix)
-      m.setColorAt(i, n.active ? ACCENT : n.hub ? FG : MUTE)
+      m.setColorAt(i, n.active ? P.accent : n.hub ? P.fg : P.mute)
     })
     m.instanceMatrix.needsUpdate = true
     if (m.instanceColor) m.instanceColor.needsUpdate = true
-  }, [nodes])
+  }, [nodes, P])
 
   // Edge geometry: one draw call
   const lineGeo = useMemo(() => {
@@ -134,7 +147,8 @@ export default function Network({ quality = 'high', reduced = false }) {
     camera.lookAt(0, 0, 0)
 
     lineMat.current.opacity = 0.11 * L.opacity
-    nodeMat.current.opacity = 0.85 * L.opacity
+    // dark marks on paper read heavier than light marks on black, so nodes step back in light mode
+    nodeMat.current.opacity = (theme === 'light' ? 0.55 : 0.85) * L.opacity
     if (packetMat.current) packetMat.current.opacity = L.opacity
 
     if (!packetCount) return
@@ -168,14 +182,14 @@ export default function Network({ quality = 'high', reduced = false }) {
       </instancedMesh>
 
       <lineSegments geometry={lineGeo} frustumCulled={false}>
-        <lineBasicMaterial ref={lineMat} color={FG} transparent opacity={0} depthWrite={false} />
+        <lineBasicMaterial ref={lineMat} color={P.fg} transparent opacity={0} depthWrite={false} />
       </lineSegments>
 
       {packetCount > 0 && (
         <points geometry={packetGeo} frustumCulled={false}>
           <pointsMaterial
             ref={packetMat}
-            color={ACCENT}
+            color={P.accent}
             size={high ? 3 : 2.5}
             sizeAttenuation={false}
             transparent

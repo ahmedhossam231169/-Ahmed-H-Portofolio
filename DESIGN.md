@@ -32,6 +32,12 @@ Nav order follows the page: 01 About · 02 Journey · 03 Work · 04 Skills · 05
 
 Rule: blue never fills a large area. It marks things that are active, like a status LED.
 
+**Light mode** is the same system on paper: `data-theme="light"` on `<html>` swaps the tokens
+(`bg #f2f1ec`, `bg-2 #e8e7e1`, `fg #0c0d0f`, `mute #5b5e64`, `dim #85888e`, `accent #2453f2`).
+Dark stays the default. The choice is saved, and an inline script in `index.html` applies it before
+first paint. The 3D network, intro graph and skills graph read the same tokens. Resting project
+screenshots wash out (grayscale + opacity) instead of darkening.
+
 ## 3. Typography
 
 - **Geist** (geometric sans), used for display, headings, nav, and project titles. Weights 300 / 500 / 600.

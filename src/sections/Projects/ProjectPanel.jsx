@@ -14,19 +14,8 @@ function ProjectPanel({ project, total }) {
   const flip = Number(project.index) % 2 === 0
   const link = project.live || project.github
 
-  const visual = (
-    <ProjectVisual
-      project={project}
-      variant={variant}
-      className={
-        variant === 'feature'
-          ? 'aspect-[4/5] sm:aspect-[16/10] lg:aspect-auto lg:h-[56vh]'
-          : variant === 'split'
-            ? 'aspect-[16/10] lg:aspect-auto lg:h-[42vh]'
-            : 'aspect-[4/5] lg:aspect-auto lg:h-[48vh]'
-      }
-    />
-  )
+  // The frame takes the screenshot's own proportions (see ProjectVisual), so nothing is cropped.
+  const visual = <ProjectVisual project={project} />
 
   return (
     <article

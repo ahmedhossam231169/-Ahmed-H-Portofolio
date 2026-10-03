@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useMemo, useRef } from 'react'
 import { gsap, SplitText } from '../../animations/gsap'
 import { setState } from '../../utils/store'
 import { startScroll, stopScroll } from '../../animations/scroll/lenis'
@@ -23,13 +23,24 @@ const EDGES = [
 // Route the signal takes (node indexes, each hop is an edge above). It ends on the active node.
 const SIGNAL = [0, 1, 4, 5]
 const EXIT = 6.9 // hand-over start; the wipe ends at 8.0s
-const ACCENT = '#2f6bff'
-const NODE = '#ededE8'
-const EDGE = 'rgb(237 237 232 / .35)'
+
+// Theme colours as concrete values: GSAP tweens between colours but can't tween CSS variables.
+// The theme is applied before first paint and can't change during the intro (the nav is hidden).
+function themeColors() {
+  const css = getComputedStyle(document.documentElement)
+  const fg = css.getPropertyValue('--color-fg').trim()
+  const n = parseInt(fg.slice(1), 16)
+  return {
+    NODE: fg,
+    ACCENT: css.getPropertyValue('--color-accent').trim(),
+    EDGE: `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, 0.35)`,
+  }
+}
 
 export default function Intro({ onDone }) {
   const root = useRef(null)
   const tl = useRef(null)
+  const { ACCENT, NODE, EDGE } = useMemo(themeColors, [])
 
   useLayoutEffect(() => {
     stopScroll()

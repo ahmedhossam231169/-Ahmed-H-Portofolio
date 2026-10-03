@@ -35,7 +35,6 @@ export function workHorizontal(section, counterEl) {
 
   panels.forEach((panel, i) => {
     const node = panel.querySelector('[data-panel-node]')
-    const visual = panel.querySelector('[data-parallax]')
     const title = panel.querySelector('[data-panel-title]')
     const meta = panel.querySelectorAll('[data-panel-meta]')
     // Panels differ in timing as well as size: larger projects move with more depth.
@@ -65,16 +64,7 @@ export function workHorizontal(section, counterEl) {
       toggleClass: 'is-current',
     })
 
-    // image drifts inside its frame (parallax depth)
-    gsap.fromTo(
-      visual,
-      { xPercent: -6 * depth },
-      {
-        xPercent: 6 * depth,
-        ease: 'none',
-        scrollTrigger: { trigger: panel, containerAnimation: move, start: 'left right', end: 'right left', scrub: true },
-      },
-    )
+    // (Screenshots stay still inside their frames. An oversized drift layer would crop them.)
 
     // title travels slightly against the track: a typographic parallax
     gsap.fromTo(

@@ -2,35 +2,51 @@ import { memo, useMemo, useState } from 'react'
 
 /**
  * Project preview frame.
- * - With `project.image`: a lazily decoded image, cropped per composition via object-position
- *   (falls back to the schematic if the file is missing).
+ * - With `project.image`: the frame takes the screenshot's own proportions (read when it
+ *   loads, 16:10 until then), so `object-cover` fills it without cropping anything.
+ *   Full-page (tall) captures get a 16:10 window anchored to the top of the page instead.
+ *   A missing or broken image falls back to the schematic.
  * - Without one: a generated schematic in the site's node/edge language. It is a neutral
  *   stand-in, not a fake screenshot, and is labelled as pending.
- * The inner [data-parallax] layer is oversized so scroll parallax never exposes edges.
+ * Colours come from theme tokens, so both work in dark and light mode.
  */
-const CROPS = { feature: '50% 30%', split: '50% 50%', compact: '35% 50%' }
+// Below this width/height ratio a screenshot is a full-page capture: show its top like a browser window.
+const TALL = 1.2
 
-export default function ProjectVisual({ project, variant, className = '' }) {
-  // A missing or broken image falls back to the schematic, so the panel never shows a hole.
+export default function ProjectVisual({ project, className = '' }) {
   const [failed, setFailed] = useState(false)
+  const [ratio, setRatio] = useState(null)
+  const [tall, setTall] = useState(false)
   const showImage = project.image && !failed
+
+  const onLoad = (e) => {
+    const { naturalWidth: w, naturalHeight: h } = e.currentTarget
+    if (!w || !h) return
+    const isTall = w / h < TALL
+    setTall(isTall)
+    setRatio(isTall ? '16 / 10' : `${w} / ${h}`)
+  }
+
   return (
-    <div className={`frame relative overflow-hidden bg-bg-2 ${className}`}>
-      <div data-parallax className="absolute inset-y-0 -inset-x-[8%]">
-        {showImage ? (
-          <img
-            src={project.image}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            onError={() => setFailed(true)}
-            className="h-full w-full object-cover"
-            style={{ objectPosition: CROPS[variant] }}
-          />
-        ) : (
+    <div
+      className={`frame relative overflow-hidden bg-bg-2 ${className}`}
+      style={ratio ? { '--ar': ratio } : undefined}
+    >
+      {showImage ? (
+        <img
+          src={project.image}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          onLoad={onLoad}
+          onError={() => setFailed(true)}
+          className={`absolute inset-0 h-full w-full object-cover ${tall ? 'object-top' : ''}`}
+        />
+      ) : (
+        <div className="absolute inset-0">
           <Schematic seed={Number(project.index)} index={project.index} />
-        )}
-      </div>
+        </div>
+      )}
       <CropMarks />
     </div>
   )
@@ -54,6 +70,9 @@ function rng(seed) {
     return s / 233280
   }
 }
+
+// foreground colour at a given strength, from the active theme
+const fg = (pct) => `color-mix(in oklab, var(--color-fg) ${pct}%, transparent)`
 
 const Schematic = memo(function Schematic({ seed, index }) {
   const { blocks, paths, nodes } = useMemo(() => {
@@ -95,10 +114,10 @@ const Schematic = memo(function Schematic({ seed, index }) {
     >
       <defs>
         <pattern id={`g${seed}`} width="20" height="20" patternUnits="userSpaceOnUse">
-          <path d="M20 0H0V20" fill="none" stroke="rgb(237 237 232 / .045)" strokeWidth="1" />
+          <path d="M20 0H0V20" fill="none" style={{ stroke: fg(4.5) }} strokeWidth="1" />
         </pattern>
       </defs>
-      <rect width="560" height="340" fill="#0c0d10" />
+      <rect width="560" height="340" style={{ fill: 'var(--color-bg-2)' }} />
       <rect width="560" height="340" fill={`url(#g${seed})`} />
       {blocks.map((b, i) => (
         <rect
@@ -107,13 +126,12 @@ const Schematic = memo(function Schematic({ seed, index }) {
           y={b.y}
           width={b.w}
           height={b.h}
-          fill={b.filled ? 'rgb(237 237 232 / .04)' : 'none'}
-          stroke="rgb(237 237 232 / .22)"
+          style={{ fill: b.filled ? fg(4) : 'none', stroke: fg(22) }}
           vectorEffect="non-scaling-stroke"
         />
       ))}
       {paths.map((d, i) => (
-        <path key={i} d={d} fill="none" stroke="rgb(237 237 232 / .28)" vectorEffect="non-scaling-stroke" />
+        <path key={i} d={d} fill="none" style={{ stroke: fg(28) }} vectorEffect="non-scaling-stroke" />
       ))}
       {nodes.map(([x, y], i) => (
         <rect
@@ -122,14 +140,14 @@ const Schematic = memo(function Schematic({ seed, index }) {
           y={y - 2.5}
           width="5"
           height="5"
-          fill={i === activeNode ? '#2f6bff' : '#ededE8'}
+          style={{ fill: i === activeNode ? 'var(--color-accent)' : 'var(--color-fg)' }}
         />
       ))}
       <text
         x="24"
         y="318"
         fill="none"
-        stroke="rgb(237 237 232 / .14)"
+        style={{ stroke: fg(14) }}
         fontFamily="Geist, sans-serif"
         fontWeight="500"
         fontSize="150"

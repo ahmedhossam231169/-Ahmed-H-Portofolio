@@ -4,6 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#07080a" />
+    <!-- Apply a saved light theme before first paint (no flash). Dark is the default. -->
+    <script>
+      try {
+        if (localStorage.getItem('theme') === 'light') {
+          document.documentElement.dataset.theme = 'light'
+          document.querySelector('meta[name="theme-color"]').content = '#f2f1ec'
+        }
+      } catch (e) {}
+    </script>
     <meta name="description" content="Ahmed Hossam — Frontend Developer and creative digital builder." />
     <title>Ahmed Hossam — Frontend Developer</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
